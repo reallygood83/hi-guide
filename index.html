@@ -1022,6 +1022,26 @@
                 transform: scale(40, 40);
             }
         }
+
+        .header-right {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .search-toggle {
+            background: none;
+            border: none;
+            color: #333;
+            font-size: 1.2rem;
+            cursor: pointer;
+            padding: 0.5rem;
+            transition: color 0.3s ease;
+        }
+
+        .search-toggle:hover {
+            color: #007bff;
+        }
     </style>
 </head>
 <body>
@@ -1032,11 +1052,10 @@
                 <a href="https://hi.goe.go.kr" target="_blank" class="nav-button">하이러닝</a>
                 <a href="https://pebble-stallion-abb.notion.site/1b210244f997802f8557c739dd3986f6?pvs=105" target="_blank" class="nav-button">요청하기</a>
             </div>
-            <div class="search-button">
-                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                    <circle cx="11" cy="11" r="8"></circle>
-                    <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
-                </svg>
+            <div class="header-right">
+                <button class="search-toggle" onclick="toggleSearch()">
+                    <i class="fas fa-search"></i>
+                </button>
             </div>
             <div class="notification-button">
                 <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
@@ -1919,52 +1938,48 @@
     </div>
     
     <script>
-        // 검색 기능 구현
-        document.getElementById('searchInput').addEventListener('input', function(e) {
-            const searchText = e.target.value.toLowerCase();
-            const sections = document.querySelectorAll('section');
+        // 사이드바 토글 기능
+        function toggleSidebar() {
+            document.querySelector('.sidebar').classList.toggle('active');
+        }
+
+        // 검색 토글 기능
+        function toggleSearch() {
+            const sidebar = document.querySelector('.sidebar');
+            const searchInput = document.querySelector('.search-input');
+            
+            // 사이드바가 닫혀있으면 열기
+            if (!sidebar.classList.contains('active')) {
+                sidebar.classList.add('active');
+            }
+            
+            // 검색 입력창에 포커스 주기
+            setTimeout(() => {
+                searchInput.focus();
+            }, 100);
+        }
+
+        // 검색 기능
+        function searchContent() {
+            const searchInput = document.querySelector('.search-input');
+            const searchTerm = searchInput.value.toLowerCase();
+            const sections = document.querySelectorAll('.section');
             
             sections.forEach(section => {
-                const text = section.textContent.toLowerCase();
-                if (text.includes(searchText)) {
+                const content = section.textContent.toLowerCase();
+                if (content.includes(searchTerm)) {
                     section.style.display = 'block';
-                    if (searchText.length > 0) {
+                    if (searchTerm.length > 0) {
                         section.scrollIntoView({ behavior: 'smooth', block: 'start' });
                     }
                 } else {
                     section.style.display = 'none';
                 }
             });
-        });
-        
-        // 페이지가 로드되면 요소들에 애니메이션 효과 적용
-        document.addEventListener('DOMContentLoaded', function() {
-            // 각 feature 카드에 지연 애니메이션 추가
-            const cards = document.querySelectorAll('.feature-card');
-            cards.forEach((card, index) => {
-                card.style.animationDelay = `${0.1 * index}s`;
-            });
-            
-            // 스크롤 시 요소가 뷰포트에 들어오면 애니메이션 효과 추가
-            const observerOptions = {
-                root: null,
-                rootMargin: '0px',
-                threshold: 0.1
-            };
-            
-            const observer = new IntersectionObserver((entries, observer) => {
-                entries.forEach(entry => {
-                    if (entry.isIntersecting) {
-                        entry.target.classList.add('animate-in');
-                        observer.unobserve(entry.target);
-                    }
-                });
-            }, observerOptions);
-            
-            document.querySelectorAll('section, .card').forEach(item => {
-                observer.observe(item);
-            });
-        });
+        }
+
+        // 검색 입력 이벤트 리스너
+        document.querySelector('.search-input').addEventListener('input', searchContent);
     </script>
 </body>
 </html>
